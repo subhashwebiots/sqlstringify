@@ -1,0 +1,18 @@
+{
+    "name": "subhashwebiots/sqlstringify",
+    "description": "String Convertion on Database",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Subhashwebiots\\Sqlstringify\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "webiots"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
