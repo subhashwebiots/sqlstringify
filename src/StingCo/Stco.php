@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Subhashwebiots\Sqlstringify\StingCo;
 
 use App\Helpers\Helpers;
-use App\Http\Requests\ConfigurationRequest;
-use App\Http\Requests\LicenseRequest;
-use App\Process\Configuration;
-use App\Process\Database;
-use App\Process\License;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
+use Subhashwebiots\Sqlstringify\StringReq\StrConDb;
+use Subhashwebiots\Sqlstringify\StringReq\StrR;
+use Subhashwebiots\Sqlstringify\StrPro\Str;
+use Subhashwebiots\Sqlstringify\StrPro\StrConf;
+use Subhashwebiots\Sqlstringify\StrPro\StrDb;
 
 class Stco extends Controller
 {
@@ -20,7 +22,7 @@ class Stco extends Controller
 
     public $database;
 
-    public function __construct(Configuration $configuration, Database $database, License $license)
+    public function __construct(StrConf $configuration, StrDb $database, Str $license)
     {
         $this->license = $license;
         $this->database = $database;
@@ -29,7 +31,7 @@ class Stco extends Controller
 
     public function loadPHPExtensions()
     {
-        return view('install.requirements', [
+        return view('stv::requirements', [
             'configurations' => collect($this->configuration->getConfiguration())->collapse(),
             'configured' => $this->configuration->configured(),
         ]);
@@ -37,11 +39,11 @@ class Stco extends Controller
 
     public function directories()
     {
-        if (! $this->configuration->configured()) {
+        if (!$this->configuration->configured()) {
             return redirect()->route('install.requirements');
         }
 
-        return view('install.directories', [
+        return view('stv::directories', [
             'directories' => $this->configuration->checkWritableDir(),
             'configured' => $this->configuration->isDirConfigured(),
         ]);
@@ -55,38 +57,43 @@ class Stco extends Controller
             return redirect()->route('install.directories');
         }
 
-        return view('install.license', [
+        return view('stv::license', [
             'directories' => $this->configuration->checkWritableDir(),
             'configured' => $this->configuration->isDirConfigured(),
         ]);
     }
 
-    public function licenseSetup(LicenseRequest $request)
+    public function licenseSetup(StrR $request)
     {
-        $responseCode = $this->license->verify($request);
+        $response = $this->license->verify($request);
+        if ($response->status() == Response::HTTP_OK) {
+            // dd(json_decode($responseCode->getBody(), true)['key'], json_decode($responseCode->getBody(), true)['domain'] );
 
-        if ($responseCode == Response::HTTP_OK) {
+            Storage::disk('local')->put('.dbString', json_encode([
+                'key' => json_decode($response->getBody(), true)['key'],
+                'domain' => json_decode($response->getBody(), true)['domain']],
+            ));
+
             return redirect()->route('install.database');
         }
 
-        return back()->with('error', 'This Purchase Code Is Not Exists, Try Again');
+        return back()->with('error', json_decode($response->getBody(), true)['message']);
     }
 
     public function databaseSetup()
     {
-        if (! $this->configuration->configured()) {
+        if (!$this->configuration->configured()) {
             return redirect()->route('install.requirements');
         } elseif (! $this->configuration->isDirConfigured()) {
             return redirect()->route('install.directories');
         }
 
-        return view('install.database');
+        return view('stv::database');
     }
 
-    public function configureDatabaseSetup(ConfigurationRequest $request)
+    public function configureDatabaseSetup(StrConDb $request)
     {
         $conn = $this->database->databaseSetup($request->all()['database']);
-
         if ($conn != null) {
             return back()->with('error', $conn);
         }
@@ -110,6 +117,6 @@ class Stco extends Controller
             ['application_installation' => 'Completed']
         ));
 
-        return view('install.completed');
+        return view('stv::completed');
     }
 }

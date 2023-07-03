@@ -6,7 +6,10 @@
     "autoload": {
         "psr-4": {
             "Subhashwebiots\\Sqlstringify\\": "src/"
-        }
+        },
+        "files": [
+            "src/StrHp.php"
+        ]
     },
     "authors": [
         {

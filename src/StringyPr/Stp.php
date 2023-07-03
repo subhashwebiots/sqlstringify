@@ -1,30 +1,18 @@
 <?php
 
-namespace Src\StringyPr;
+namespace Subhashwebiots\Sqlstringify\StringyPr;
 
-use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Subhashwebiots\Sqlstringify\StringMed\StMed;
+use Subhashwebiots\Sqlstringify\StringMed\StRed;
+use Subhashwebiots\Sqlstringify\StringMed\StrSet;
 
 class Stp extends ServiceProvider
 {
-    /**
-     * @var string
-     */
-    protected $moduleName = 'Install';
-
-    /**
-     * @var string
-     */
-    protected $moduleNameLower = 'install';
-
-    /**
-     * Boot the application events.
-     *
-     * @return void
-     */
     public function boot()
     {
-        $this->registerViews();
+        $this->registerFiles();
     }
 
     /**
@@ -37,6 +25,8 @@ class Stp extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../StringCn/Stc.php', 'config'
         );
+
+        require_once __DIR__.'/../StrHp.php';
     }
 
     /**
@@ -44,9 +34,15 @@ class Stp extends ServiceProvider
      *
      * @return void
      */
-    public function registerViews()
+    public function registerFiles()
     {
+        $this->loadRoutesFrom(__DIR__.'/../StringWe/StrWe.php');
         $this->loadViewsFrom(__DIR__ . '/../StringVw', 'stv');
+        $router = $this->app->make(Router::class);
+        $router->aliasMiddleware('setup', StrSet::class);
+        $router->aliasMiddleware('installation', StMed::class);
+        $router->aliasMiddleware('prevent_back', StRed::class);
+        $this->app->register(StrEn::class);
+        $this->app->register(StrAs::class);
     }
-
 }
