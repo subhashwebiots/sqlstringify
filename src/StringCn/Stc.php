@@ -23,7 +23,8 @@ return [
         'bootstrap/cache',
     ],
     'migration' => '.migration',
-
+    'key' => '',
+    'domain' => '',
     'app' => [
         'APP_NAME' => 'Chatloop',
         'APP_ENV' => '',
