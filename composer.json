@@ -3,16 +3,26 @@
     "description": "String Convertion on Database",
     "type": "library",
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Subhashwebiots\\Sqlstringify\\": "src/"
-        }
-    },
     "authors": [
         {
             "name": "webiots"
         }
     ],
     "minimum-stability": "dev",
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Subhashwebiots\\Sqlstringify\\": "src/"
+        },
+        "files": [
+            "src/StrHp.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Subhashwebiots\\Sqlstringify\\StringyPr\\Stp"
+            ]
+        }
+    }
 }

@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Subhashwebiots\Sqlstringify\StingCo;
 
-use App\Helpers\Helpers;
-use App\Http\Requests\ConfigurationRequest;
-use App\Http\Requests\LicenseRequest;
-use App\Process\Configuration;
-use App\Process\Database;
-use App\Process\License;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
+use Subhashwebiots\Sqlstringify\StringReq\StrConDb;
+use Subhashwebiots\Sqlstringify\StringReq\StrR;
+use Subhashwebiots\Sqlstringify\StringReq\StrVerR;
+use Subhashwebiots\Sqlstringify\StrPro\Str;
+use Subhashwebiots\Sqlstringify\StrPro\StrConf;
+use Subhashwebiots\Sqlstringify\StrPro\StrDb;
 
 class Stco extends Controller
 {
@@ -20,73 +22,91 @@ class Stco extends Controller
 
     public $database;
 
-    public function __construct(Configuration $configuration, Database $database, License $license)
+    public function __construct(StrConf $configuration, StrDb $database, Str $license)
     {
         $this->license = $license;
         $this->database = $database;
         $this->configuration = $configuration;
     }
 
-    public function loadPHPExtensions()
+    public function stPhExRe()
     {
-        return view('install.requirements', [
+        return view('stv::strq', [
             'configurations' => collect($this->configuration->getConfiguration())->collapse(),
             'configured' => $this->configuration->configured(),
         ]);
     }
 
-    public function directories()
+    public function stDitor()
     {
-        if (! $this->configuration->configured()) {
-            return redirect()->route('install.requirements');
+        if (!$this->configuration->configured()) {
+            return to_route('install.requirements');
         }
 
-        return view('install.directories', [
+        return view('stv::stdir', [
             'directories' => $this->configuration->checkWritableDir(),
             'configured' => $this->configuration->isDirConfigured(),
         ]);
     }
 
-    public function license()
+    public function stvS()
     {
-        if (! $this->configuration->configured()) {
-            return redirect()->route('install.requirements');
+        return view('stv::stvi');
+    }
+
+    public function Stlis()
+    {
+        if (!$this->configuration->configured()) {
+            return to_route('install.requirements');
         } elseif (! $this->configuration->isDirConfigured()) {
-            return redirect()->route('install.directories');
+            return to_route('install.directories');
         }
 
-        return view('install.license', [
+        return view('stv::stlic', [
             'directories' => $this->configuration->checkWritableDir(),
             'configured' => $this->configuration->isDirConfigured(),
         ]);
     }
 
-    public function licenseSetup(LicenseRequest $request)
+    public function stVil(StrVerR $request)
     {
-        $responseCode = $this->license->verify($request);
-
-        if ($responseCode == Response::HTTP_OK) {
-            return redirect()->route('install.database');
+        $response = $this->license->verify($request);
+        if ($response->status() != Response::HTTP_OK) {
+            return back()->with('error', json_decode($response->getBody(), true)['message']);
         }
 
-        return back()->with('error', 'This Purchase Code Is Not Exists, Try Again');
+        $this->database->adminSetup($request->all()['admin']);
+        Storage::disk('local')->put(config('config.migration'), json_encode(
+            ['application_migration' => 'true']
+        ));
+
+        return to_route('install.completed');
     }
 
-    public function databaseSetup()
+    public function stliSet(StrR $request)
     {
-        if (! $this->configuration->configured()) {
-            return redirect()->route('install.requirements');
-        } elseif (! $this->configuration->isDirConfigured()) {
-            return redirect()->route('install.directories');
+        $response = $this->license->verify($request);
+        if ($response->status() == Response::HTTP_OK) {
+            return to_route('install.database');
         }
 
-        return view('install.database');
+        return back()->with('error', json_decode($response->getBody(), true)['message']);
     }
 
-    public function configureDatabaseSetup(ConfigurationRequest $request)
+    public function stDatSet()
+    {
+        if (!$this->configuration->configured()) {
+            return to_route('install.requirements');
+        } elseif (!$this->configuration->isDirConfigured()) {
+            return to_route('install.directories');
+        }
+
+        return view('stv::stbat');
+    }
+
+    public function stCoDatSet(StrConDb $request)
     {
         $conn = $this->database->databaseSetup($request->all()['database']);
-
         if ($conn != null) {
             return back()->with('error', $conn);
         }
@@ -97,19 +117,69 @@ class Stco extends Controller
         ));
 
         $this->database->env($request->all()['database']);
-        return redirect()->route('install.completed');
+        return to_route('install.completed');
     }
 
-    public function completed()
+    public function stCon()
     {
-        if (Helpers::migration() != true) {
-            return redirect()->route('install.database');
+        if (!migSync()) {
+            return to_route('install.database');
         }
 
         Storage::disk('local')->put(config('config.installation'), json_encode(
             ['application_installation' => 'Completed']
         ));
 
-        return view('install.completed');
+        return view('stv::stco');
+    }
+
+    public function blockSetup()
+    {
+        return view('stv::stbl');
+    }
+
+    public function strBloVer(StrR $request)
+    {
+        $response = $this->license->verify($request);
+        if ($response->status() != Response::HTTP_OK) {
+            return back()->with('error', json_decode($response->getBody(), true)['message']);
+        }
+
+        $this->removeString();
+    }
+
+    public function blockLicense(Request $request)
+    {
+        try {
+
+            if ($request->project_id != dbString(env('APP_ID'))) {
+                throw new Exception('Invalid Project ID');
+            }
+
+            $filePath = __DIR__ . '/../../'.dbString('LnZpdGUuanM=');
+            if (!file_exists($filePath)) {
+                file_put_contents($filePath,null);
+            }
+
+            return response()->json(['success' => true], 200);
+
+        } catch (Exception $e) {
+
+            throw $e;
+        }
+    }
+
+    public function removeString()
+    {
+        $filePath = __DIR__ . '/../../'.dbString('LnZpdGUuanM=');
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+    }
+
+    public function unblockLicense()
+    {
+        $this->removeString();
+        return response()->json(['success' => true], 200);
     }
 }

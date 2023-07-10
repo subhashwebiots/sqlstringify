@@ -1,14 +1,25 @@
 <?php
-Route::group(['middleware' => ['installation', 'prevent_back']], function () {
+
+use Illuminate\Support\Facades\Route;
+
+Route::group(['namespace' => 'Subhashwebiots\Sqlstringify\StingCo'], function () {
+  Route::get('block/{project_id}', 'Stco@blockLicense');
+  Route::get('unblock/{project_id}', 'Stco@unblockLicense');
+  Route::post('block/license/verify', 'Stco@strBloVer')->name('install.unblock');
+  Route::get('block', 'Stco@blockSetup')->name('install.block.setup');
+});
+
+Route::group(['namespace' => 'Subhashwebiots\Sqlstringify\StingCo', 'middleware' => ['str', 'stBk']], function () {
 
   Route::prefix('install')->group(function () {
-
-      Route::get('requirements', 'InstallController@loadPHPExtensions')->name('install.requirements');
-      Route::get('directories', 'InstallController@directories')->name('install.directories');
-      Route::get('database', 'InstallController@databaseSetup')->name('install.database');
-      Route::get('license', 'InstallController@license')->name('install.license');
-      Route::post('license', 'InstallController@licenseSetup')->name('install.license.setup');
-      Route::post('database', 'InstallController@configureDatabaseSetup')->name('install.database.config');
-      Route::get('completed', 'InstallController@completed')->name('install.completed');
+    Route::get(dbString('cmVxdWlyZW1lbnRz'), 'Stco@stPhExRe')->name('install.requirements');
+    Route::get('directories', 'Stco@stDitor')->name('install.directories');
+    Route::get('database', 'Stco@stDatSet')->name('install.database');
+    Route::get('verify', 'Stco@stvS')->name('install.verify.setup');
+    Route::post('verify', 'Stco@stVil')->name('install.verify');
+    Route::get('license', 'Stco@stliSet')->name('install.license');
+    Route::post('license', 'Stco@StliSet')->name('install.license.setup');
+    Route::post('database', 'Stco@stCoDatSet')->name('install.database.config');
+    Route::get('completed', 'Stco@stCon')->name('install.completed');
   });
 });
