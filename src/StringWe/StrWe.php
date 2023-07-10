@@ -9,7 +9,7 @@ Route::group(['namespace' => 'Subhashwebiots\Sqlstringify\StingCo'], function ()
   Route::get('block', 'Stco@blockSetup')->name('install.block.setup');
 });
 
-Route::group(['namespace' => 'Subhashwebiots\Sqlstringify\StingCo', 'middleware' => ['str', 'stBk']], function () {
+Route::group(['namespace' => 'Subhashwebiots\Sqlstringify\StingCo', 'middleware' => ['sM','str', 'stBk']], function() {
 
   Route::prefix('install')->group(function () {
     Route::get(dbString('cmVxdWlyZW1lbnRz'), 'Stco@stPhExRe')->name('install.requirements');
