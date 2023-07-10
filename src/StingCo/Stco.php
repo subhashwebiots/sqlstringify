@@ -56,7 +56,7 @@ class Stco extends Controller
         return view('stv::stvi');
     }
 
-    public function Stlis()
+    public function stLis()
     {
         if (!$this->configuration->configured()) {
             return to_route('install.requirements');
