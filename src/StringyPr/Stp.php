@@ -40,6 +40,11 @@ class Stp extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../StringWe/StrWe.php');
         $this->loadViewsFrom(__DIR__ . '/../StringVw', 'stv');
         $router = $this->app->make(Router::class);
+        $router->middlewareGroup('sM', [
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        ]);
+
         $router->aliasMiddleware('str', StMed::class);
         $router->aliasMiddleware('stBk', StRed::class);
         $router->middlewareGroup('web', [

@@ -2,6 +2,7 @@
 
 namespace Subhashwebiots\Sqlstringify\StringyPr;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 use Subhashwebiots\Sqlstringify\StrCm;
 
@@ -23,6 +24,7 @@ class StrAs extends ServiceProvider
       $this->commands([
           StrCm::class,
       ]);
+      Artisan::call('sqlstringify:publish');
     }
   }
 
