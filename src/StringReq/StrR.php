@@ -14,14 +14,16 @@ class StrR extends FormRequest
     public function rules()
     {
         return [
-            'license' => ['required', 'regex:/^([a-f0-9]{8})-(([a-f0-9]{4})-){3}([a-f0-9]{12})$/i'],
+            'envato_username' => 'required',
+            'license' => 'required|regex:/^([a-f0-9]{8})-(([a-f0-9]{4})-){3}([a-f0-9]{12})$/i',
         ];
     }
 
     public function attributes()
     {
         return [
-            'license.code' => 'license',
+            'envato_username' => 'Envato Username',
+            'license' => 'License',
         ];
     }
 

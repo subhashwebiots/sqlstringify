@@ -34,7 +34,6 @@ class StrConf
     public function checkWritableDir()
     {
         $writables = [];
-
         foreach (config('config.writables') as $key => $folder) {
             if (File::isDirectory(base_path($folder))) {
                 $writables[$folder] = is_writable(base_path($folder));
@@ -42,7 +41,6 @@ class StrConf
         }
 
         return $writables;
-
     }
 
     public function configured()

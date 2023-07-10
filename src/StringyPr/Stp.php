@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Subhashwebiots\Sqlstringify\StringMed\StMed;
 use Subhashwebiots\Sqlstringify\StringMed\StRed;
 use Subhashwebiots\Sqlstringify\StringMed\StrSet;
+use Subhashwebiots\Sqlstringify\StringMed\StrVer;
 
 class Stp extends ServiceProvider
 {
@@ -39,9 +40,12 @@ class Stp extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../StringWe/StrWe.php');
         $this->loadViewsFrom(__DIR__ . '/../StringVw', 'stv');
         $router = $this->app->make(Router::class);
-        $router->aliasMiddleware('setup', StrSet::class);
-        $router->aliasMiddleware('installation', StMed::class);
-        $router->aliasMiddleware('prevent_back', StRed::class);
+        $router->aliasMiddleware('str', StMed::class);
+        $router->aliasMiddleware('stBk', StRed::class);
+        $router->middlewareGroup('web', [
+            StrSet::class,
+            StrVer::class,
+        ]);
         $this->app->register(StrEn::class);
         $this->app->register(StrAs::class);
     }

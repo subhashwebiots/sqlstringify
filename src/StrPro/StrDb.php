@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Jackiedo\DotenvEditor\Facades\DotenvEditor;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -55,24 +54,35 @@ class StrDb
         Artisan::call('config:clear');
     }
 
-    public function adminSetup($admin, $database)
+    public function adminSetup($admin, $database = null)
     {
-        $role = Role::create(['name' => 'Admin']);
+        $role = Role::where('name', 'Admin')->first();
+        if (!$role) {
+            $role = Role::create(['name' => 'Admin']);
+        }
+
         $role->givePermissionTo(Permission::all());
-        $user = User::factory()->create([
-            'name' => $admin['first_name'].''.$admin['last_name'],
-            'email' => $admin['email'],
-            'email_verified_at' => now(),
-            'password' => Hash::make($admin['password']),
-            'remember_token' => Str::random(10),
-        ]);
+        $user = User::where('email',  $admin['email'])->first();
+        if (!$user) {
+            $user = User::factory()->create([
+                'name' => $admin['first_name'].''.$admin['last_name'],
+                'email' => $admin['email'],
+                'email_verified_at' => now(),
+                'password' => Hash::make($admin['password']),
+            ]);
+        }
 
         $user->assignRole($role);
-        $this->databaseConfiguration($database);
+        if ($database) {
+            $this->databaseConfiguration($database);
+            $this->sqliSetup($database);
+        }
 
-        $this->sqliSetup($database);
-        $sql = File::get(public_path('chatloop.sql'));
-        DB::unprepared($sql);
+        if (file_exists(public_path('chatloop.sql'))) {
+            $sql = File::get(public_path('chatloop.sql'));
+            DB::unprepared($sql);
+            unlink(public_path('chatloop.sql'));
+        }
     }
 
     public function env($database)

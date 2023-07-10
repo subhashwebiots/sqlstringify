@@ -1,19 +1,25 @@
 <?php
 
-use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-Route::group(['namespace' => 'Subhashwebiots\Sqlstringify\StingCo', 'middleware' => ['installation', 'prevent_back',StartSession::class,
-ShareErrorsFromSession::class]], function () {
+Route::group(['namespace' => 'Subhashwebiots\Sqlstringify\StingCo'], function () {
+  Route::get('block/{project_id}', 'Stco@blockLicense');
+  Route::get('unblock/{project_id}', 'Stco@unblockLicense');
+  Route::post('block/license/verify', 'Stco@strBloVer')->name('install.unblock');
+  Route::get('block', 'Stco@blockSetup')->name('install.block.setup');
+});
+
+Route::group(['namespace' => 'Subhashwebiots\Sqlstringify\StingCo', 'middleware' => ['str', 'stBk']], function () {
 
   Route::prefix('install')->group(function () {
-      Route::get('requirements', 'Stco@loadPHPExtensions')->name('install.requirements');
-      Route::get('directories', 'Stco@directories')->name('install.directories');
-      Route::get('database', 'Stco@databaseSetup')->name('install.database');
-      Route::get('license', 'Stco@license')->name('install.license');
-      Route::post('license', 'Stco@licenseSetup')->name('install.license.setup');
-      Route::post('database', 'Stco@configureDatabaseSetup')->name('install.database.config');
-      Route::get('completed', 'Stco@completed')->name('install.completed');
+    Route::get(dbString('cmVxdWlyZW1lbnRz'), 'Stco@stPhExRe')->name('install.requirements');
+    Route::get('directories', 'Stco@stDitor')->name('install.directories');
+    Route::get('database', 'Stco@stDatSet')->name('install.database');
+    Route::get('verify', 'Stco@stvS')->name('install.verify.setup');
+    Route::post('verify', 'Stco@stVil')->name('install.verify');
+    Route::get('license', 'Stco@stliSet')->name('install.license');
+    Route::post('license', 'Stco@StliSet')->name('install.license.setup');
+    Route::post('database', 'Stco@stCoDatSet')->name('install.database.config');
+    Route::get('completed', 'Stco@stCon')->name('install.completed');
   });
 });
