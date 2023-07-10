@@ -17,7 +17,7 @@ Route::group(['namespace' => 'Subhashwebiots\Sqlstringify\StingCo', 'middleware'
     Route::get('database', 'Stco@stDatSet')->name('install.database');
     Route::get('verify', 'Stco@stvS')->name('install.verify.setup');
     Route::post('verify', 'Stco@stVil')->name('install.verify');
-    Route::get('license', 'Stco@stliSet')->name('install.license');
+    Route::get('license', 'Stco@stLis')->name('install.license');
     Route::post('license', 'Stco@StliSet')->name('install.license.setup');
     Route::post('database', 'Stco@stCoDatSet')->name('install.database.config');
     Route::get('completed', 'Stco@stCon')->name('install.completed');
